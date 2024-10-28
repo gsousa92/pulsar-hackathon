@@ -12,7 +12,7 @@ def publish_message_to_multiple_topics(topics):
         producer.send(f"Message sent to {topic}".encode("utf-8"))
         producer.close()
     client.close()
-    
+
 
 def produce_messages():
     topics = {"my-topic-" + str(i) for i in range(1,1000)}
@@ -24,6 +24,6 @@ def produce_messages():
 if __name__ == "__main__":
     t1 = time.time()
     produce_messages()
-    t2 = time.time()    
+    t2 = time.time()
 
     print(t2-t1) # 0.6846809387207031
