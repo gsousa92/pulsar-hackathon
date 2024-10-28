@@ -1,29 +1,34 @@
+import asyncio
 import time
-from pulsar import Client
-
-client = Client("pulsar://localhost:6650")  # Pulsar service URL
-
-# Dictionary to store producers for each topic dynamically
-PRODUCERS = {}
-
-def publish_message_to_multiple_topics(topics):
-    for topic in topics:
-        producer = client.create_producer(topic)
-        producer.send(f"Message sent to {topic}".encode("utf-8"))
-        producer.close()
-    client.close()
+from pulsar.asyncio import Client
 
 
-def produce_messages():
-    topics = {"my-topic-" + str(i) for i in range(1,1000)}
+async def send_message_to_topic(client, topic, message):
+    producer = await client.create_producer(topic)
+    try:
+        await producer.send(message)
+    finally:
+        await producer.close()
 
-    # Example usage
-    publish_message_to_multiple_topics(topics)
+
+async def produce_messages(topics):
+    client = Client("pulsar://localhost:6650")
+    tasks = []
+    try:
+        for topic in topics:
+            message = f"Message sent to {topic}".encode("utf-8")
+
+            tasks.append(send_message_to_topic(client, topic, message))
+        await asyncio.gather(*tasks)
+    finally:
+        await client.close()
 
 
 if __name__ == "__main__":
+    topics = {"my-topic-" + str(i) for i in range(1, 5000)}
+
     t1 = time.time()
-    produce_messages()
+    asyncio.run(produce_messages(topics))
     t2 = time.time()
 
-    print(t2-t1) # 0.6846809387207031
+    print(f"Time taken: {t2 - t1:.2f} seconds")
