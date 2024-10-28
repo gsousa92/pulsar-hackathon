@@ -3,9 +3,12 @@ Apache pulsar mvp
 
 
 # Build
-- create virtual environment
-`python -m venv .venv`
-- Activate venv
-`source .venv/bin/activate`
-- Install requirements
-`pip install -r requirements.txt`
+
+- Initialize the project
+  ```bash
+  $ ./init.sh
+  ```
+- Run the pulsar service
+  ```bash
+  $ docker-compose up -d
+  ```
