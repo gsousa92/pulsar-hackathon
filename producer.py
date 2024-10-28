@@ -15,7 +15,7 @@ def publish_message_to_multiple_topics(topics):
     
 
 def produce_messages():
-    topics = {"my-topic-" + str(i) for i in range(1,100)}
+    topics = {"my-topic-" + str(i) for i in range(1,1000)}
 
     # Example usage
     publish_message_to_multiple_topics(topics)
