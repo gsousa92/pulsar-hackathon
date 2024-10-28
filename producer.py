@@ -1,9 +1,29 @@
-import pulsar
+import time
+from pulsar import Client
 
-client = pulsar.Client('pulsar://localhost:6650')
-producer = client.create_producer('my-topic')
+client = Client("pulsar://localhost:6650")  # Pulsar service URL
 
-for i in range(10):
-    producer.send(('hello-pulsar-%d' % i).encode('utf-8'))
+# Dictionary to store producers for each topic dynamically
+PRODUCERS = {}
 
-client.close()
+def publish_message_to_multiple_topics(topics):
+    for topic in topics:
+        producer = client.create_producer(topic)
+        producer.send(f"Message sent to {topic}".encode("utf-8"))
+        producer.close()
+    client.close()
+    
+
+def produce_messages():
+    topics = {"my-topic-" + str(i) for i in range(1,100)}
+
+    # Example usage
+    publish_message_to_multiple_topics(topics)
+
+
+if __name__ == "__main__":
+    t1 = time.time()
+    produce_messages()
+    t2 = time.time()    
+
+    print(t2-t1) # 0.6846809387207031
