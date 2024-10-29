@@ -6,10 +6,10 @@ from itertools import cycle
 from admin import list_topics
 
 client = pulsar.Client('pulsar://localhost:6650')
-batch_policy = pulsar.ConsumerBatchReceivePolicy(100, -1, 1)
-topics = list_topics()
+batch_policy = pulsar.ConsumerBatchReceivePolicy(max_num_message=100, max_num_bytes=-1, timeout_ms=1)
+topics = list_topics(r'^persistent://public/default/my-topic-.*')
 
-consumers = [
+consumers = (
     client.subscribe(
         topic,
         subscription_name=f'{topic}-subscription',
@@ -18,14 +18,11 @@ consumers = [
         receiver_queue_size=100,
         batch_receive_policy=batch_policy
     ) for topic in topics
-]
+)
 
 consumer_iterator = cycle(consumers)
 
 def run_consumers(consumer_iterator):
-    last_topic_message_count = 0
-    last_topic = None
-
     try:
         while True:
             consumer = next(consumer_iterator)
