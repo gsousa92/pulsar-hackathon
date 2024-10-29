@@ -1,13 +1,17 @@
 import pulsar
 import re
 import time
+import logging
 from itertools import cycle
 
 from admin import list_topics
 
-client = pulsar.Client('pulsar://localhost:6650')
-batch_policy = pulsar.ConsumerBatchReceivePolicy(max_num_message=100, max_num_bytes=-1, timeout_ms=1)
-topics = list_topics(r'^persistent://public/default/my-topic-.*')
+null_logger = logging.getLogger("null_logger")
+null_logger.addHandler(logging.NullHandler())
+
+client = pulsar.Client('pulsar://localhost:6650', logger=null_logger)
+batch_policy = pulsar.ConsumerBatchReceivePolicy(max_num_message=100, max_num_bytes=-1, timeout_ms=10)
+topics = list_topics(r'^persistent://public/default/organization-.*')
 
 consumers = (
     client.subscribe(
