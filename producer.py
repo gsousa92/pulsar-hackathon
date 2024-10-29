@@ -4,16 +4,17 @@ import time
 from pulsar.asyncio import Client
 
 # Total number of topics
-TOPICS_COUNT = 1000  
+TOPICS_COUNT = 1000
 
 # Number of messages per topic will be a random between the following min and max values
 MAX_MESSAGE_PER_TOPIC = 5
 MIN_MESSAGE_PER_TOPIC = 1
 
 # specific number of messages generated to specific topics
-CUSTOM_TOPICS = {  
+CUSTOM_TOPICS = {
     "my-topic-1": 1000,
-    "my-topic-2": 50,
+    "my-topic-100": 1000,
+    "my-topic-500": 1000
 }
 
 
@@ -38,7 +39,7 @@ async def produce_messages(topics):
             for message in range(number_of_messages):
                 message = f"Message sent to {topic}".encode("utf-8")
                 tasks.append(send_message_to_topic(client, topic, message))
-        
+
         await asyncio.gather(*tasks)
     finally:
         await client.close()
@@ -47,7 +48,7 @@ async def produce_messages(topics):
 
 if __name__ == "__main__":
     topics = {"my-topic-" + str(i) for i in range(0, TOPICS_COUNT)}
-    
+
     t1 = time.time()
     messages_sent_count = asyncio.run(produce_messages(topics))
     t2 = time.time()
